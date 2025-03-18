@@ -1,0 +1,28 @@
+from flask import Flask
+from extensions import mysql  # ✅ Import mysql from extensions
+
+app = Flask(__name__)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'html'
+
+mysql.init_app(app)  # ✅ Initialize MySQL here
+
+# -------- Register Blueprints --------
+from routes.static_routes import static_bp
+from routes.hosteller_routes import hosteller_bp
+from routes.staff_routes import staff_bp
+from routes.fees_routes import fees_bp
+from routes.attendance_routes import attendance_bp
+
+app.register_blueprint(static_bp)
+app.register_blueprint(hosteller_bp)
+app.register_blueprint(staff_bp)
+app.register_blueprint(fees_bp)
+app.register_blueprint(attendance_bp)
+
+
+# -------- Run Server --------
+if __name__ == '__main__':
+    app.run(debug=True)

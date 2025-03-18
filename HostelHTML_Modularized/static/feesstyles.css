@@ -1,0 +1,28 @@
+/* style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  h2, h5 {
+    font-weight: bold;
+  }
+  
+  .card {
+    border-radius: 1rem;
+  }
+  
+  .btn-success, .btn-danger {
+    border-radius: 20px;
+    padding: 8px 20px;
+  }
+  
+  .table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+  }
+  
+  textarea {
+    resize: none;
+  }
+  

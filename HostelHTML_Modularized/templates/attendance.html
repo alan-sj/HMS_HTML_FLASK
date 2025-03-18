@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar/Navbar -->
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="/hosteller-info" class="nav-link text-white">Hosteller Info</a></li>
+                <li class="nav-item"><a href="/staff-info" class="nav-link text-white">Staff Info</a></li>
+                <li class="nav-item"><a href="/fees-info" class="nav-link text-white">Fees Info</a></li>
+                <li class="nav-item"><a href="/attendance-info" class="nav-link text-white">Attendance</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Attendance</h1>
+            <div id="alertBox" class="alert d-none" role="alert"></div>
+
+            <div class="card p-4 mb-4 shadow">
+                <h2>Mark Attendance</h2>
+
+                <!-- Month Selection -->
+                <div class="mb-3">
+                    <label for="monthSelect" class="form-label">Select Month</label>
+                    <select id="monthSelect" class="form-select" onchange="loadStudents()">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <input type="checkbox" id="selectAll" class="form-check-input" onclick="toggleAll(this)">
+                    <label for="selectAll" class="form-check-label">Mark All Present</label>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text" id="searchStudent" class="form-control" placeholder="Search by name or admission number..." onkeyup="searchStudent()">
+                </div>
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Admission No</th>
+                            <th>Name</th>
+                            <th>Days Present</th>
+                            <th>Mark Present</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable"></tbody>
+                </table>
+
+                <button class="btn btn-primary" onclick="submitAttendance()">Submit Attendance</button>
+              
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Show alerts
+        function showAlert(message, type = 'success') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.innerText = message;
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 3000);
+        }
+
+        // Populate month dropdown
+        function populateMonths() {
+            const monthSelect = document.getElementById('monthSelect');
+            const currentDate = new Date();
+            for (let i = 0; i < 12; i++) {
+                const month = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                const option = document.createElement('option');
+                option.value = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
+                option.text = month.toLocaleString('default', { month: 'long', year: 'numeric' });
+                monthSelect.appendChild(option);
+            }
+        }
+
+        // Load students for selected month
+        function loadStudents() {
+            const selectedMonth = document.getElementById('monthSelect').value;
+            
+            fetch(`/attendance-info/json?month=${selectedMonth}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Attendance Data:", data);
+
+                    const table = document.getElementById('attendanceTable');
+                    table.innerHTML = ''; 
+
+                    data.forEach(student => {
+                        const row = `
+                            <tr>
+                                <td>${student.admission_no}</td>
+                                <td>${student.name}</td>
+                                <td>${student.days_present}</td>
+                                <td><input type="checkbox" class="form-check-input" data-admission-no="${student.admission_no}"></td>
+                            </tr>`;
+                        table.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error loading students:', error));
+        }
+
+        // Toggle All Checkboxes
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('#attendanceTable input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = source.checked);
+        }
+
+        // Search students by name or admission number
+        function searchStudent() {
+            const query = document.getElementById('searchStudent').value.toLowerCase();
+            document.querySelectorAll('#attendanceTable tr').forEach(row => {
+                const admissionNo = row.children[0].innerText.toLowerCase();
+                const name = row.children[1].innerText.toLowerCase();
+                row.style.display = admissionNo.includes(query) || name.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Submit Attendance (increase days_present count)
+        function submitAttendance() {
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const selectedStudents = [];
+            document.querySelectorAll('#attendanceTable input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedStudents.push({ admission_no: checkbox.dataset.admissionNo, month: selectedMonth });
+            });
+
+            if (selectedStudents.length === 0) {
+                showAlert('No students selected!', 'danger');
+                return;
+            }
+
+            fetch('/attendance/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(selectedStudents)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.message, 'success');
+                loadStudents(); // Reload student list
+            })
+            .catch(error => console.error('Error updating attendance:', error));
+        }
+
+        // Initialize page
+        window.onload = function () {
+            populateMonths();
+            loadStudents();
+        };
+    </script>
+
+</body>
+</html>
