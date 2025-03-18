@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hostel Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="/dashboard" class="nav-link text-white">Dashboard</a></li>
+                <li class="nav-item"><a href="/hosteller-info" class="nav-link text-white">Hosteller Info</a></li>
+                <li class="nav-item"><a href="/staff-info" class="nav-link text-white">Staff Info</a></li>
+                <li class="nav-item"><a href="/attendance-info" class="nav-link text-white">Attendance</a></li>
+                <li class="nav-item"><a href="/fees" class="nav-link text-white">Fees Info</a></li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <h1>Hostel Dashboard</h1>
+
+            <!-- Total counts section -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm p-3">
+                        <h4>Total Students: <span id="totalStudents">Loading...</span></h4>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm p-3">
+                        <h4>Total Staff: <span id="totalStaff">Loading...</span></h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart section -->
+            <div class="card p-4 mb-4 shadow-lg">
+                <h2>Room Availability</h2>
+                <canvas id="roomChart" width="400" height="400"></canvas>
+                <p>Total Available Beds: <span id="availableBeds"></span></p>
+                <p>Total Occupied Beds: <span id="occupiedBeds"></span></p>
+            </div>
+
+          
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        fetch('/dashboard-info')
+            .then(response => response.json())
+            .then(data => {
+                // Get total beds and available beds
+                const availableBeds = data.available_beds;
+                const totalBeds = data.total_beds;
+                const occupiedBeds = totalBeds - availableBeds;
+                
+                // Calculate percentages
+                const availablePercentage = ((availableBeds / totalBeds) * 100).toFixed(2);
+                const occupiedPercentage = ((occupiedBeds / totalBeds) * 100).toFixed(2);
+                
+                // Set available and occupied bed percentages
+                document.getElementById('availableBeds').textContent = `${availablePercentage}%`;
+                document.getElementById('occupiedBeds').textContent = `${occupiedPercentage}%`;
+                
+                // Set total students and staff
+                document.getElementById('totalStudents').textContent = data.total_students;
+                document.getElementById('totalStaff').textContent = data.total_staff;
+    
+                // Set up the chart
+                const ctx = document.getElementById('roomChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Available Beds', 'Occupied Beds'],
+                        datasets: [{
+                            label: 'Room Availability',
+                            data: [availablePercentage, occupiedPercentage],
+                            backgroundColor: ['#4caf50', '#f44336'],
+                            borderColor: ['#4caf50', '#f44336'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+    
+</body>
+
+</html>

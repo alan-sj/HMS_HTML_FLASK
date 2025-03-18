@@ -15,12 +15,14 @@ from routes.hosteller_routes import hosteller_bp
 from routes.staff_routes import staff_bp
 from routes.fees_routes import fees_bp
 from routes.attendance_routes import attendance_bp
+from routes.dashboard_routes import dashboard_bp
 
 app.register_blueprint(static_bp)
 app.register_blueprint(hosteller_bp)
 app.register_blueprint(staff_bp)
 app.register_blueprint(fees_bp)
 app.register_blueprint(attendance_bp)
+app.register_blueprint(dashboard_bp)
 
 
 # -------- Run Server --------

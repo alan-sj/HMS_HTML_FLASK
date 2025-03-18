@@ -108,3 +108,19 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+
+#roomChart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; 
+    max-width: 300px; /* Adjust the max width */
+    max-height: 300px; /* Adjust the max height */
+    width: 100%; /* Make the chart responsive */
+    height: auto; /* Maintain aspect ratio */
+    margin: 0 auto; /* Centers the chart horizontally */
+}
+
+
