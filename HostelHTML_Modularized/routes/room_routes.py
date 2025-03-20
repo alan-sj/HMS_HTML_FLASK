@@ -4,6 +4,27 @@ from extensions import mysql
 room_bp = Blueprint('room_bp', __name__)
 
 # ---------------- Room APIs ----------------
+@room_bp.route('/delete-room', methods=['POST'])
+def delete_room():
+    try:
+        data = request.get_json()
+        room_no = data['room_no']
+
+        cur = mysql.connection.cursor()
+
+        # SQL query to delete a room
+        cur.execute("""
+            DELETE FROM room
+            WHERE room_no = %s
+        """, (room_no,))
+
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({'success': True, 'message': 'Room deleted successfully'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error deleting room: {str(e)}'}), 500
 @room_bp.route('/get-room-details', methods=['GET'])
 def get_room_details():
     try:

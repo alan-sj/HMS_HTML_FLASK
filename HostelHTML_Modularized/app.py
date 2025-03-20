@@ -16,7 +16,8 @@ from routes.staff_routes import staff_bp
 from routes.fees_routes import fees_bp
 from routes.attendance_routes import attendance_bp
 from routes.dashboard_routes import dashboard_bp
-from routes.room_routes import room_bp 
+from routes.room_routes import room_bp
+from routes.login import login_bp 
 
 app.register_blueprint(static_bp)
 app.register_blueprint(hosteller_bp)
@@ -25,6 +26,7 @@ app.register_blueprint(fees_bp)
 app.register_blueprint(attendance_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(room_bp)  
+app.register_blueprint(login_bp)
 
 
 # -------- Run Server --------

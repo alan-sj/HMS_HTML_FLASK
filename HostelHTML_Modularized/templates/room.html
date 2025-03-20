@@ -1,216 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Room Details</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        .sidebar {
-            background-color: #343a40;
-            color: white;
-            padding: 15px;
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-        }
-
-        .main-content {
-            margin-left: 270px;
-            padding: 20px;
-        }
-
-        .table-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        .table thead {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .alert {
-            display: none;
-            margin-top: 15px;
-        }
-
-        .add-room-container {
-            margin-top: 20px;
-        }
-    </style>
 </head>
-
 <body>
-    <div class="wrapper">
-        <!-- Sidebar/Navbar -->
-        <div class="sidebar">
-            <h2>Menu</h2>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a href="/dashboard" class="nav-link text-white">Dashboard</a></li>
-                <li class="nav-item"><a href="/hosteller-info" class="nav-link text-white">Hosteller Info</a></li>
-                <li class="nav-item"><a href="/staff-info" class="nav-link text-white">Staff Info</a></li>
-                <li class="nav-item"><a href="/attendance-info" class="nav-link text-white">Attendance</a></li>
-                <li class="nav-item"><a href="/fees-info" class="nav-link text-white">Fees Info</a></li>
-            </ul>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <h1>Room Details</h1>
-            <div id="alertBox" class="alert alert-success" role="alert">Action Successful</div>
-
-            <div class="search-container">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by Room No or Hosteller Name" onkeyup="searchRoom()">
-            </div>
-
-            <!-- Add Room Form -->
-            <div class="add-room-container">
-                <h3>Add New Room</h3>
-                <form id="addRoomForm" onsubmit="addRoom(event)">
-                    <div class="mb-3">
-                        <label for="roomNo" class="form-label">Room No</label>
-                        <input type="number" class="form-control" id="roomNo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="capacity" class="form-label">Capacity</label>
-                        <input type="number" class="form-control" id="capacity" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Room</button>
-                </form>
-            </div>
-
-            <div class="table-container">
-                <h2>Room Details</h2>
-
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Room No</th>
-                            <th>Student Name</th>
-                            <th>Admission No</th>
-                            <th>Capacity</th>
-                            <th>Available Slots</th>
-                        </tr>
-                    </thead>
-                    <tbody id="roomDetailsTable">
-                        <!-- Dynamic data will be populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <a href="/login" class="logout"><button class="logoutstyle">Log Out</button></a>
+<div class="wrapper">
+    <!-- Sidebar/Navbar -->
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="/dashboard" class="nav-link text-white">Dashboard</a></li>
+            <li class="nav-item"><a href="/hosteller-info" class="nav-link text-white">Hosteller Info</a></li>
+            <li class="nav-item"><a href="/staff-info" class="nav-link text-white">Staff Info</a></li>
+            <li class="nav-item"><a href="/attendance-info" class="nav-link text-white">Attendance</a></li>
+            <li class="nav-item"><a href="/fees-info" class="nav-link text-white">Fees Info</a></li>
+            <li class="nav-item"><a href="/room" class="nav-link text-white">Room Details</a></li>
+        </ul>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // Show alerts
-        function showAlert(message, type = 'success') {
-            const alertBox = document.getElementById('alertBox');
-            alertBox.className = `alert alert-${type}`;
-            alertBox.innerText = message;
-            alertBox.style.display = 'block';
-            setTimeout(() => alertBox.style.display = 'none', 3000);
-        }
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="text-center mb-4">Room Details</h1>
+        <div id="alertBox" class="alert d-none" role="alert"></div>
 
-        // Fetch room and hosteller data
-        function loadRoomDetails() {
-            fetch('/get-room-details')  // Replace with the actual route
-                .then(response => response.json())
-                .then(data => {
-                    const table = document.getElementById('roomDetailsTable');
-                    table.innerHTML = '';
+        <!-- Add and Delete Room Form -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md 6 mb-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">Add New Room</h3>
+                        <form id="addRoomForm" onsubmit="addRoom(event)">
+                            <div class="mb-3">
+                                <label for="roomNo" class="form-label">Room No</label>
+                                <input type="number" class="form-control" id="roomNo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="capacity" class="form-label">Capacity</label>
+                                <input type="number" class="form-control" id="capacity">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Room</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-                    data.forEach(room => {
-                        const row = `
-                            <tr>
-                                <td>${room.room_no}</td>
-                                <td>${room.hosteller_name}</td>
-                                <td>${room.admission_no}</td>
-                                <td>${room.capacity}</td>
-                                <td>${room.availability}</td>
-                            </tr>
-                        `;
-                        table.innerHTML += row;
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching room details:', error);
-                    showAlert('Error fetching room details', 'danger');
-                });
-        }
+            <div class="col-md-6 mb-3 ms-md-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">Delete Room</h3>
+                        <form id="deleteRoomForm" onsubmit="deleteRoom(event)"> 
+                            <div class="mb-3">
+                                <label for="deleteRoomNo" class="form-label">Enter Room No to Delete</label>
+                                <input type="number" class="form-control" id="deleteRoomNo" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">Delete Room</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        // Filter room details based on search input
-        function searchRoom() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#roomDetailsTable tr');
+        <!-- Search Section -->
+        <div class="mb-4">
+            <h2>Search</h2>
+            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by Room No or Hosteller Name" onkeyup="searchRoom()">
+        </div>
 
-            rows.forEach(row => {
-                const roomNo = row.cells[0].innerText.toLowerCase();
-                const hostellerName = row.cells[1].innerText.toLowerCase();
-                
-                if (roomNo.includes(searchQuery) || hostellerName.includes(searchQuery)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
+        <!-- Room Details Table -->
+        <div class="table-container">
+            <h2>Room Details</h2>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Room No</th>
+                        <th>Student Name</th>
+                        <th>Admission No</th>
+                        <th>Capacity</th>
+                        <th>Available Slots</th>
+                    </tr>
+                </thead>
+                <tbody id="roomDetailsTable">
+                    <!-- Dynamic data will be populated here -->
+                </tbody>
+            </table>
+        </div>
 
-        // Add room function
-        function addRoom(event) {
-            event.preventDefault();
-            
-            const roomNo = document.getElementById('roomNo').value;
-            const capacity = document.getElementById('capacity').value;
-            
-            // Sending room data to server
-            fetch('/add-room', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    room_no: roomNo,
-                    capacity: capacity,
-                    availability: 0
-                })
-            })
+        
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Show alerts
+    function showAlert(message, type = 'success') {
+        const alertBox = document.getElementById('alertBox');
+        alertBox.className = `alert alert-${type}`;
+        alertBox.innerText = message;
+        alertBox.classList.remove('d-none');
+        setTimeout(() => alertBox.classList.add('d-none'), 3000);
+    }
+
+    // Fetch room and hosteller data
+    function loadRoomDetails() {
+        fetch('/get-room-details')  // Replace with the actual route
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    showAlert('Room added successfully');
-                    loadRoomDetails();
-                } else {
-                    showAlert('Error adding room', 'danger');
-                }
+                const table = document.getElementById('roomDetailsTable');
+                table.innerHTML = '';
+
+                data.forEach(room => {
+                    const row = `
+                        <tr>
+                            <td>${room.room_no}</td>
+                            <td>${room.hosteller_name}</td>
+                            <td>${room.admission_no}</td>
+                            <td>${room.capacity}</td>
+                            <td>${room.availability}</td>
+                        </tr>
+                    `;
+                    table.innerHTML += row;
+                });
             })
             .catch(error => {
-                console.error('Error adding room:', error);
-                showAlert('Error adding room', 'danger');
+                console.error('Error fetching room details:', error);
+                showAlert('Error fetching room details', 'danger');
             });
-        }
+    }
 
-        // Initialize the page
-        window.onload = function () {
-            loadRoomDetails();
-        };
-    </script>
+    // Filter room details based on search input
+    function searchRoom() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#roomDetailsTable tr');
+
+        rows.forEach(row => {
+            const roomNo = row.cells[0].innerText.toLowerCase();
+            const admission_no  = row.cells[2].innerText.toLowerCase();
+
+            if (roomNo.includes(searchQuery) || admission_no.includes(searchQuery)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Add room function
+    function addRoom(event) {
+        event.preventDefault();
+       
+        const roomNo = document.getElementById('roomNo').value;
+        const capacity = document.getElementById('capacity').value;
+        
+        // Sending room data to server
+        fetch('/add-room', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                room_no: roomNo,
+                capacity: capacity,
+                availability: 0
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Room added successfully');
+                loadRoomDetails();
+            } else {
+                showAlert('Error adding room', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error adding room:', error);
+            showAlert('Error adding room', 'danger');
+        });
+    }
+
+    // Delete room function
+    function deleteRoom(event) {
+        event.preventDefault();
+        console.log('deleteRoom');
+        
+        const roomNo = document.getElementById('deleteRoomNo').value;
+        
+        fetch('/delete-room', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                room_no: roomNo
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Room deleted successfully');
+                loadRoomDetails();
+            } else {
+                showAlert('Error deleting room', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting room:', error);
+            showAlert('Error deleting room', 'danger');
+        });
+    }
+
+    // Initialize the page
+    window.onload = function () {
+        loadRoomDetails();
+    };
+</script>
 </body>
-
 </html>
