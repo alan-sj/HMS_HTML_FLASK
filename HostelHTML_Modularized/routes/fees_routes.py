@@ -1,5 +1,5 @@
 from decimal import Decimal
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from extensions import mysql
 from datetime import datetime
 
@@ -108,8 +108,3 @@ def mark_paid():
     mysql.connection.commit()
     cur.close()
     return jsonify({"message": f"Fees marked as paid for {admission_no}"}), 200
-
-# Render Fees Management Page
-@fees_bp.route('/fees')
-def fees_management():
-    return render_template('fees.html')

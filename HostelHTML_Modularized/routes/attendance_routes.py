@@ -1,13 +1,8 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from extensions import mysql
 from datetime import datetime
 
 attendance_bp = Blueprint('attendance_bp', __name__)
-
-# Route to display attendance page
-@attendance_bp.route('/attendance-info', methods=['GET'])
-def attendance():
-    return render_template('attendance.html')
 
 # Fetch attendance for a selected month (default: current month)
 @attendance_bp.route('/attendance-info/json', methods=['GET'])

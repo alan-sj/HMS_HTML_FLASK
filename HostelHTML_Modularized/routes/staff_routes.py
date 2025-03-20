@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from extensions import mysql
 
 staff_bp = Blueprint('staff_bp', __name__)

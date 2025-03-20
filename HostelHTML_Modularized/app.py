@@ -1,3 +1,4 @@
+import webbrowser
 from flask import Flask
 from extensions import mysql  # ✅ Import mysql from extensions
 
@@ -7,7 +8,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'html'
 
-mysql.init_app(app)  # ✅ Initialize MySQL here
+mysql.init_app(app)
 
 # -------- Register Blueprints --------
 from routes.static_routes import static_bp
@@ -31,4 +32,6 @@ app.register_blueprint(login_bp)
 
 # -------- Run Server --------
 if __name__ == '__main__':
+    webbrowser.open('http://127.0.0.1:5000/login')
     app.run(debug=True)
+    

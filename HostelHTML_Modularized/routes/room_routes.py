@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from extensions import mysql
 
 room_bp = Blueprint('room_bp', __name__)
@@ -76,10 +76,6 @@ def add_room():
 
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error adding room: {str(e)}'}), 500
-
-@room_bp.route('/room')
-def room():
-    return render_template('room.html')
 
 # ---------------- Run Server ----------------
 if __name__ == '__main__':

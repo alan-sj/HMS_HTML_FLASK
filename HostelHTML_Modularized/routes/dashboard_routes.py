@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify
 from extensions import mysql
 
 dashboard_bp = Blueprint('dashboard_bp', __name__)
@@ -32,6 +32,3 @@ def get_dashboard_info():
         'available_beds': available_beds
     })
 
-@dashboard_bp.route('/dashboard')
-def dsh():
-    return render_template('dashboard.html')

@@ -8,7 +8,6 @@ static_bp = Blueprint('static_bp', __name__)
 def home():
     return "Backend running..."
 
-
 @static_bp.route('/fees-info')
 def fees_info():
     return render_template('fees.html')
@@ -22,5 +21,22 @@ def hosteller_info():
 @static_bp.route('/staff-info')
 def staff_info():
     return render_template('staffInfo.html')
+
+@static_bp.route('/room')
+def room():
+    return render_template('room.html')
+
+@static_bp.route('/attendance-info')
+def attendance():
+    return render_template('attendance.html')
+
+@static_bp.route('/login')
+def login():
+    return render_template('login.html')
+
+@static_bp.route('/dashboard')
+def dsh():
+    return render_template('dashboard.html')
+
 
 

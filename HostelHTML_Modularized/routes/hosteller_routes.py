@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from extensions import mysql
 
 hosteller_bp = Blueprint('hosteller_bp', __name__)

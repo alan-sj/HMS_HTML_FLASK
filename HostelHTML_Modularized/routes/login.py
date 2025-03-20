@@ -1,11 +1,7 @@
-from flask import Blueprint,render_template,request,jsonify
+from flask import Blueprint,request,jsonify
 from extensions import mysql
 
 login_bp=Blueprint('login_bp',__name__)
-
-@login_bp.route('/login',methods=['GET'])
-def login():
-    return render_template('login.html')
 
 @login_bp.route('/login',methods=['POST'])
 def authenticarion():
