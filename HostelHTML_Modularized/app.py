@@ -1,3 +1,4 @@
+import os
 import webbrowser
 from flask import Flask
 from extensions import mysql  # ✅ Import mysql from extensions
@@ -29,9 +30,12 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(room_bp)  
 app.register_blueprint(login_bp)
 
-
+def autoreload():
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        return
+    webbrowser.open('http://127.0.0.1:5000/login')
+    
 # -------- Run Server --------
 if __name__ == '__main__':
-    webbrowser.open('http://127.0.0.1:5000/login')
+    autoreload()
     app.run(debug=True)
-    

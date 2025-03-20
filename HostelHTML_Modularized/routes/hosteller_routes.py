@@ -3,7 +3,6 @@ from extensions import mysql
 
 hosteller_bp = Blueprint('hosteller_bp', __name__)
 
-# ---------------- Hosteller APIs ----------------
 @hosteller_bp.route('/hostellers', methods=['GET'])
 def get_hostellers():
     cur = mysql.connection.cursor()

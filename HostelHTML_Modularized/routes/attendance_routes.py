@@ -38,8 +38,6 @@ def get_attendance():
 @attendance_bp.route('/attendance/update', methods=['POST'])
 def update_attendance():
     data = request.get_json()
-    
-    # Ensure at least one student is selected
     if not data:
         return jsonify({'error': 'No students selected!'}), 400
 

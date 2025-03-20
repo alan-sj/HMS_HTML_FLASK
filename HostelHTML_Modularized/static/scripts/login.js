@@ -13,9 +13,10 @@ async function login(event){
     const result=await response.json();
     if(response.ok){
         alert("Logged In as "+username);
+        localStorage.setItem("username",username);  
         window.location.href="/dashboard";
     }
     else{
-        alert("Incorrect Credentials"+result.error);
+        alert("Incorrect Credentials");
     }
 }

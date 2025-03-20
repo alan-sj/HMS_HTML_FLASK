@@ -58,7 +58,6 @@ def calculate_fees():
 
     cur = mysql.connection.cursor()
 
-    # Fetch attendance records
     cur.execute("""
         SELECT admission_no, SUM(days_present) 
         FROM attendance 
@@ -67,16 +66,9 @@ def calculate_fees():
     """, (month, year))
 
     attendance_data = cur.fetchall()
-
-    print("Attendance Data:", attendance_data)  # Debugging print
-
-    # Insert or update fee records
     for record in attendance_data:
         admission_no, days_present = record[0], record[1]
         total_fee = days_present * int(per_day_fee)
-
-        print(f"Inserting: {admission_no}, Month: {month}, Year: {year}, Fee: {total_fee}")  # Debug
-
         cur.execute("""
             INSERT INTO fee (admission_no, month, year, total_fee, paid_amount, pending_amount) 
             VALUES (%s, %s, %s, %s, 0, %s) 
