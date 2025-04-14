@@ -1,8 +1,8 @@
 function showAlert(m, t = 'success') {
     const a = document.getElementById('alertBox');
     a.className = `alert alert-${t}`;
-    a.innerText = m;
     a.classList.remove('d-none');
+    a.innerText = m;
     setTimeout(() => a.classList.add('d-none'), 3000);
 }
 
@@ -11,8 +11,6 @@ document.getElementById('hostellerForm').onsubmit = function(e) {
     
     // Get form data
     let formData = Object.fromEntries(new FormData(this));
-
-    // Debugging: Check if "status" is mistakenly included
     console.log("Form Data:", formData);
 
     fetch('/hosteller', {
@@ -22,7 +20,7 @@ document.getElementById('hostellerForm').onsubmit = function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        showAlert(data.message, data.message.includes('successfully') ? 'success' : 'danger');
+        showAlert(data.message);
         loadHostellers();
         this.reset();
     });

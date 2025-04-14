@@ -27,12 +27,17 @@ def add_hosteller():
     print(data)
     cur = mysql.connection.cursor()
     try:
+        cur.execute("SELECT * FROM Hosteller where admission_no=%s",(data['admission_no'],))
+        exist=cur.fetchone()
+        if exist:
+            return jsonify({'message':'Error:Hosteller exists with given ID'}),400
+        
         cur.execute("""
             INSERT INTO Hosteller (name, room_no, admission_no, date_of_admission, contact) 
             VALUES (%s, %s, %s, %s, %s)
         """, (data['name'], data['room_no'], data['admission_no'], data['date_of_admission'], data['contact']))
         mysql.connection.commit()
-        return jsonify({'message': 'Hosteller added successfully!'}), 201
+        return jsonify({'message': 'Hosteller added successfully!'})
     except mysql.connection.Error as err:
         return jsonify({'message': f'Error: {str(err)}'}), 400
     finally:

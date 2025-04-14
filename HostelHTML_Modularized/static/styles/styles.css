@@ -83,7 +83,6 @@ th {
     background-color: #007BFF;
     color: white;
 }
-
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
@@ -153,11 +152,20 @@ button:hover {
     margin-bottom: 20px;
 }
 
-.alert {
-    display: none;
-    margin-top: 15px;
-}
+
 
 .add-room-container {
     margin-top: 20px;
 }
+#alertBox {
+    border: 2px solid #28a745;     
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    background-color: #d4edda; 
+    color: #155724; 
+    opacity: 1;
+    text-align: center; 
+}
+
+

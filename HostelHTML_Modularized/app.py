@@ -1,7 +1,7 @@
 import os
 import webbrowser
 from flask import Flask
-from extensions import mysql  # ✅ Import mysql from extensions
+from extensions import mysql  
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -11,7 +11,7 @@ app.config['MYSQL_DB'] = 'html'
 
 mysql.init_app(app)
 
-# -------- Register Blueprints --------
+#Blueprints
 from routes.static_routes import static_bp
 from routes.hosteller_routes import hosteller_bp
 from routes.staff_routes import staff_bp
@@ -30,12 +30,13 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(room_bp)  
 app.register_blueprint(login_bp)
 
+#Prevnet AutoReload
 def autoreload():
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         return
     webbrowser.open('http://127.0.0.1:5000/login')
     
-# -------- Run Server --------
+
 if __name__ == '__main__':
     autoreload()
     app.run(debug=True)

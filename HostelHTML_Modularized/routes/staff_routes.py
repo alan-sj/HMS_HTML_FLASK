@@ -19,6 +19,7 @@ def get_staff():
             'contact': row[5]
         } for row in rows
     ])
+
 @staff_bp.route('/staff/<staff_id>', methods=['DELETE'])
 def delete_staff(staff_id):
     try:
@@ -31,7 +32,7 @@ def delete_staff(staff_id):
     except Exception as e:
         return jsonify({'message': f'Error deleting staff: {str(e)}'}), 500
 
-# Route to add new staff
+
 @staff_bp.route('/staff', methods=['POST'])
 def add_staff():
     try:

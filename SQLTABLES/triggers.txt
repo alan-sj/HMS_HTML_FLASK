@@ -1,0 +1,98 @@
+mysql> show triggers;
++--------------------------+--------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+------------------------+-----------------------------------------------------------------------------------------------------------------------+----------------+----------------------+----------------------+--------------------+
+| Trigger                  | Event  | Table      | Statement
+
+
+
+
+
+
+
+                       | Timing | Created                | sql_mode
+
+         | Definer        | character_set_client | collation_connection | Database Collation |
++--------------------------+--------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+------------------------+-----------------------------------------------------------------------------------------------------------------------+----------------+----------------------+----------------------+--------------------+
+| before_attendance_insert | INSERT | attendance | BEGIN
+
+    SET NEW.month = IFNULL(NEW.month, MONTH(CURDATE()));
+    SET NEW.year = IFNULL(NEW.year, YEAR(CURDATE()));
+    SET NEW.days_present = 0;
+    SET NEW.status = 'Absent';
+    SET NEW.date = IFNULL(NEW.date, CURDATE());
+END
+
+
+                                                                  | BEFORE | 2025-03-18 23:38:40.14 | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | root@localhost | cp850                | cp850_general_ci     | utf8mb4_0900_ai_ci |
+| after_attendance_insert  | INSERT | attendance | BEGIN
+
+    IF NOT EXISTS (
+        SELECT 1 FROM fee
+        WHERE admission_no = NEW.admission_no
+        AND month = NEW.month
+        AND year = NEW.year
+    ) THEN
+
+        INSERT INTO fee (admission_no, room_no, total_fee, paid_amount, pending_amount, month, year, fee_status)
+        VALUES (NEW.admission_no,
+                (SELECT room_no FROM hosteller WHERE admission_no = NEW.admission_no LIMIT 1),
+                0.00,
+                0.00,
+                0.00,
+                NEW.month,
+                NEW.year,
+                'Unpaid');
+    END IF;
+END                                                 | AFTER  | 2025-03-19 00:37:18.38 | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | root@localhost | cp850                | cp850_general_ci     | utf8mb4_0900_ai_ci |
+| after_hosteller_insert   | INSERT | hosteller  | BEGIN
+    DECLARE today DATE;
+    DECLARE room_capacity INT;
+    DECLARE room_availability INT;
+
+    SET today = CURDATE();
+
+
+    SELECT capacity, availability
+    INTO room_capacity, room_availability
+    FROM room
+    WHERE room_no = NEW.room_no;
+
+
+    IF room_availability > 0 THEN
+
+        UPDATE room
+        SET availability = availability - 1
+        WHERE room_no = NEW.room_no;
+
+
+        INSERT INTO attendance (admission_no, status, date)
+        VALUES (NEW.admission_no, 'Absent', today);
+    ELSE
+
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Room is fully occupied';
+    END IF;
+END | AFTER  | 2025-03-19 03:12:53.54 | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | root@localhost | cp850                | cp850_general_ci     | utf8mb4_0900_ai_ci |
+| after_hosteller_delete   | DELETE | hosteller  | BEGIN
+    DECLARE current_availability INT;
+    DECLARE room_capacity INT;
+
+
+    SELECT availability INTO current_availability
+    FROM Room
+    WHERE room_no = OLD.room_no;
+
+
+    SELECT capacity INTO room_capacity
+    FROM Room
+    WHERE room_no = OLD.room_no;
+
+
+    IF current_availability < room_capacity THEN
+        UPDATE Room
+        SET availability = availability + 1
+        WHERE room_no = OLD.room_no;
+    END IF;
+END
+
+                                      | AFTER  | 2025-03-19 03:09:16.39 | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | root@localhost | cp850                | cp850_general_ci     | utf8mb4_0900_ai_ci |
++--------------------------+--------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+------------------------+-----------------------------------------------------------------------------------------------------------------------+----------------+----------------------+----------------------+--------------------+
+4 rows in set (0.02 sec)
